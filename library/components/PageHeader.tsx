@@ -10,33 +10,34 @@ const PageHeader = () => {
     const insets = useSafeAreaInsets();
 
     return <View style={{
-        borderBottomColor: "#e2e8f0",
-        backgroundColor: "#090d17",
+        borderBottomColor: "#e2e8f01a",
+        justifyContent: "space-between",
+        backgroundColor: "#11141c",
         paddingTop: insets.top + 8,
         paddingHorizontal: 16,
         borderBottomWidth: 1,
+        alignItems: "center",
+        flexDirection: "row",
         paddingBottom: 8,
     }}>
-        <HStack className="justify-between items-center">
-            <HStack space="md" className="items-center">
-                <Image
-                    source={{ uri: 'https://avatar.iran.liara.run/public/30' }}
-                    style={{
-                        backgroundColor: "white",
-                        borderRadius: 25,
-                        height: 45,
-                        width: 45
-                    }}
-                />
-                <VStack>
-                    <Heading size="xl" className='text-white'>Mehmet Ali</Heading>
-                </VStack>
-            </HStack>
-
-            <Box className="p-2">
-                <Bell color="#7a8799" size={24} />
-            </Box>
+        <HStack space="md" className="items-center">
+            <Image
+                source={{ uri: 'https://avatar.iran.liara.run/public/30' }}
+                style={{
+                    backgroundColor: "white",
+                    borderRadius: 25,
+                    height: 45,
+                    width: 45
+                }}
+            />
+            <VStack>
+                <Heading size="xl" style={{ color: "white" }}>Wealth Intellingence</Heading>
+            </VStack>
         </HStack>
+
+        <Box className="p-2">
+            <Bell color="#7a8799" size={24} />
+        </Box>
     </View>
 }
 
