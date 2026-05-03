@@ -1,4 +1,4 @@
-import PageHeader from '@/library/components/pageHeader'
+import PageHeader from '@/library/components/PageHeader'
 import { Tabs } from 'expo-router'
 import { ArrowLeftRight, CreditCard, LayoutDashboard, PieChart, Settings, TrendingUp } from 'lucide-react-native'
 

@@ -2,6 +2,9 @@ import * as SQLite from 'expo-sqlite'
 
 const db = SQLite.openDatabaseSync('financeapp.db')
 
+// Modül ilk import edildiğinde otomatik çalışır — useEffect'i beklemeye gerek yok
+initDatabase()
+
 export function initDatabase() {
   db.execSync(`
     PRAGMA journal_mode = WAL;

@@ -17,9 +17,7 @@ const PageContainer = ({ children, style, safeArea = true }: PageContainerProps)
 
 const styles = StyleSheet.create({
     wrapper: {
-        backgroundColor: '#121212',
-        paddingHorizontal: 20,
-        alignItems: "center",
+        backgroundColor: '#11141c',
         flex: 1,
     },
 });
