@@ -50,7 +50,9 @@
         {
           "photosPermission": "Wealth Intelligence galerinizden fiş fotoğrafı seçmenizi sağlar."
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

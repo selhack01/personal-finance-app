@@ -8,7 +8,9 @@
       "Bash(gh pr create --title 'feature: full app — biometric auth, SQLite, 6 tabs, fiş OCR, Binance API' --body ' *)",
       "PowerShell($env:GITHUB_TOKEN; [System.Environment]::GetEnvironmentVariable\\(\"GITHUB_TOKEN\", \"User\"\\))",
       "PowerShell(git -C \"C:\\\\Users\\\\selhack\\\\Desktop\\\\FinanceApp\\\\.claude\\\\worktrees\\\\serene-feynman-5773e7\" remote -v)",
-      "Bash(git commit -m 'fix: remove double padding from PageContainer *)"
+      "Bash(git commit -m 'fix: remove double padding from PageContainer *)",
+      "Bash(npm install *)",
+      "Bash(git commit -m 'chore: upgrade to Expo SDK 54 *)"
     ]
   }
 }
