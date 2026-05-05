@@ -10,7 +10,8 @@
       "PowerShell(git -C \"C:\\\\Users\\\\selhack\\\\Desktop\\\\FinanceApp\\\\.claude\\\\worktrees\\\\serene-feynman-5773e7\" remote -v)",
       "Bash(git commit -m 'fix: remove double padding from PageContainer *)",
       "Bash(npm install *)",
-      "Bash(git commit -m 'chore: upgrade to Expo SDK 54 *)"
+      "Bash(git commit -m 'chore: upgrade to Expo SDK 54 *)",
+      "Bash(git commit -m 'fix: use ImagePicker base64 directly instead of FileSystem.readAsStringAsync *)"
     ]
   }
 }

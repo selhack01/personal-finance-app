@@ -1,7 +1,6 @@
 import { Text } from '@/components/ui/text'
 import { useFinanceStore } from '@/store/financeStore'
 import * as ImagePicker from 'expo-image-picker'
-import * as FileSystem from 'expo-file-system'
 import * as SecureStore from 'expo-secure-store'
 import { useRouter } from 'expo-router'
 import { Camera, CheckCircle, ImageIcon, Loader, ReceiptText, X } from 'lucide-react-native'
@@ -30,18 +29,30 @@ export default function ScanReceipt() {
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(accounts[0]?.id ?? null)
 
   const pickImage = async (fromCamera: boolean) => {
+    // base64:true ile direkt base64 alıyoruz — FileSystem.readAsStringAsync'e gerek yok
+    const options: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+      base64: true,
+    }
+
     const result = fromCamera
-      ? await ImagePicker.launchCameraAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 })
-      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 })
+      ? await ImagePicker.launchCameraAsync(options)
+      : await ImagePicker.launchImageLibraryAsync(options)
 
     if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri)
+      const asset = result.assets[0]
+      setImageUri(asset.uri)
       setParsed(null)
-      analyzeReceipt(result.assets[0].uri)
+      if (asset.base64) {
+        analyzeReceipt(asset.base64, asset.uri)
+      } else {
+        Alert.alert('Hata', 'Fotoğraf okunamadı, tekrar deneyin.')
+      }
     }
   }
 
-  const analyzeReceipt = async (uri: string) => {
+  const analyzeReceipt = async (base64: string, uri: string) => {
     setLoading(true)
     try {
       const groqKey = await SecureStore.getItemAsync('groq_api_key')
@@ -55,8 +66,7 @@ export default function ScanReceipt() {
         return
       }
 
-      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 })
-      const mimeType = uri.endsWith('.png') ? 'image/png' : 'image/jpeg'
+      const mimeType = uri.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
 
       const response = await fetch(GROQ_API_URL, {
         method: 'POST',
@@ -172,8 +182,8 @@ Toplam tutarı bulamazsan null yaz. Tarih yoksa bugünün tarihini yaz.`,
             )}
 
             {!loading && !parsed && (
-              <TouchableOpacity style={styles.retryBtn} onPress={() => analyzeReceipt(imageUri)}>
-                <Text style={styles.white}>Tekrar Analiz Et</Text>
+              <TouchableOpacity style={styles.retryBtn} onPress={() => { setImageUri(null); setParsed(null) }}>
+                <Text style={styles.white}>Tekrar Dene</Text>
               </TouchableOpacity>
             )}
 
