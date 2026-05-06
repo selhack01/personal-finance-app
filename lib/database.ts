@@ -55,6 +55,18 @@ export function initDatabase() {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS investments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      symbol TEXT NOT NULL,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'stock',
+      quantity REAL NOT NULL DEFAULT 0,
+      avg_cost REAL NOT NULL DEFAULT 0,
+      currency TEXT NOT NULL DEFAULT 'TRY',
+      note TEXT,
+      created_at INTEGER DEFAULT (strftime('%s', 'now'))
+    );
   `)
 
   seedCategories()

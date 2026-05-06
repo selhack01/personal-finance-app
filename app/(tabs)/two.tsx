@@ -2,11 +2,13 @@ import { Text } from '@/components/ui/text'
 import Card from '@/library/components/card'
 import PageContainer from '@/library/components/pageContainer'
 import * as SecureStore from 'expo-secure-store'
-import { Bitcoin, ChevronRight, Eye, EyeOff, Key, Shield, Trash2, Zap } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { Bitcoin, Bot, ChevronRight, Eye, EyeOff, Key, Shield, Sparkles, Trash2, Zap } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 export default function Settings() {
+  const router = useRouter()
   const [binanceKey, setBinanceKey] = useState('')
   const [binanceSecret, setBinanceSecret] = useState('')
   const [showSecret, setShowSecret] = useState(false)
@@ -76,6 +78,24 @@ export default function Settings() {
   return (
     <PageContainer safeArea={false}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+
+        {/* AI Danışman */}
+        <TouchableOpacity onPress={() => router.push('/ai-advisor')} activeOpacity={0.8}>
+          <Card style={styles.aiCard}>
+            <View style={styles.aiRow}>
+              <View style={styles.aiIcon}>
+                <Sparkles color="#3a81f2" size={22} />
+              </View>
+              <View style={styles.flex}>
+                <Text bold style={[styles.white, { fontSize: 16 }]}>AI Finansal Danışman</Text>
+                <Text style={[styles.muted, { fontSize: 12 }]}>
+                  Harcamalarını analiz et, öneri al
+                </Text>
+              </View>
+              <ChevronRight color="#3a81f2" size={20} />
+            </View>
+          </Card>
+        </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>GÜVENLİK</Text>
         <Card>
@@ -222,6 +242,9 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 80, gap: 8 },
+  aiCard: { borderWidth: 1, borderColor: '#3a81f233' },
+  aiRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  aiIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#3a81f222', alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { color: '#424d5e', fontSize: 11, fontWeight: '700', letterSpacing: 1, marginTop: 12, marginBottom: 4, marginLeft: 4 },
   settingRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconWrap: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#3a81f222', alignItems: 'center', justifyContent: 'center' },
