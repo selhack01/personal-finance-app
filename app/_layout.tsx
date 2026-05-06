@@ -56,6 +56,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add-transaction" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="scan-receipt" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="ai-advisor" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
       </Stack>
       <AuthGuard />
     </GluestackUIProvider>
