@@ -225,15 +225,32 @@ export default function Portfolio() {
     return s + total * price
   }, 0)
 
-  const totalInvestmentValue = investments.reduce((s, inv) => {
-    const q = quotes[inv.symbol]
-    if (!q) return s + inv.quantity * inv.avg_cost
-    return s + inv.quantity * q.regularMarketPrice
-  }, 0)
+  // Para birimini quote'tan al, yoksa inv.currency kullan
+  const getInvCurrency = (inv: Investment) =>
+    quotes[inv.symbol]?.currency ?? inv.currency
 
-  const totalInvestmentCost = investments.reduce((s, inv) => s + inv.quantity * inv.avg_cost, 0)
-  const totalPnl = totalInvestmentValue - totalInvestmentCost
-  const totalPnlPct = totalInvestmentCost > 0 ? (totalPnl / totalInvestmentCost) * 100 : 0
+  // USD ve TRY yatırımlarını ayır
+  const usdInvestments = investments.filter((inv) => getInvCurrency(inv) !== 'TRY')
+  const tryInvestments = investments.filter((inv) => getInvCurrency(inv) === 'TRY')
+
+  const calcValue = (inv: Investment) => {
+    const q = quotes[inv.symbol]
+    return inv.quantity * (q?.regularMarketPrice ?? inv.avg_cost)
+  }
+  const calcCost = (inv: Investment) => inv.quantity * inv.avg_cost
+
+  const totalUsdValue = usdInvestments.reduce((s, inv) => s + calcValue(inv), 0)
+  const totalUsdCost  = usdInvestments.reduce((s, inv) => s + calcCost(inv), 0)
+  const totalTryValue = tryInvestments.reduce((s, inv) => s + calcValue(inv), 0)
+  const totalTryCost  = tryInvestments.reduce((s, inv) => s + calcCost(inv), 0)
+
+  const totalUsdPnl = totalUsdValue - totalUsdCost
+  const totalUsdPnlPct = totalUsdCost > 0 ? (totalUsdPnl / totalUsdCost) * 100 : 0
+  const totalTryPnl = totalTryValue - totalTryCost
+  const totalTryPnlPct = totalTryCost > 0 ? (totalTryPnl / totalTryCost) * 100 : 0
+
+  const hasUsd = usdInvestments.length > 0
+  const hasTry = tryInvestments.length > 0
 
   // ─── Render ───────────────────────────────────────────────────
   return (
@@ -250,11 +267,19 @@ export default function Portfolio() {
             {formatCurrency(totalBank + totalCash)}
           </Text>
           <View style={styles.summaryRow}>
-            {totalInvestmentValue > 0 && (
+            {hasUsd && (
               <View style={styles.summaryBadge}>
                 <LineChart color="#8b5cf6" size={13} />
                 <Text style={{ color: '#8b5cf6', fontSize: 12 }}>
-                  {formatCurrency(totalInvestmentValue)} yatırım
+                  ${totalUsdValue.toFixed(2)} yatırım
+                </Text>
+              </View>
+            )}
+            {hasTry && (
+              <View style={styles.summaryBadge}>
+                <LineChart color="#8b5cf6" size={13} />
+                <Text style={{ color: '#8b5cf6', fontSize: 12 }}>
+                  {formatCurrency(totalTryValue, 'TRY')} yatırım
                 </Text>
               </View>
             )}
@@ -294,25 +319,52 @@ export default function Portfolio() {
         {/* ── TAB: Hisse/Fon ── */}
         {activeTab === 'investments' && (
           <>
-            {/* Hisse/Fon özet */}
-            {investments.length > 0 && (
+            {/* Hisse/Fon özet — USD */}
+            {hasUsd && (
               <Card>
+                <Text style={[styles.muted, { fontSize: 11, marginBottom: 8 }]}>USD PORTFÖY</Text>
                 <View style={styles.pnlRow}>
                   <View style={styles.flex}>
-                    <Text style={styles.muted}>Toplam Değer</Text>
-                    <Text bold style={styles.white}>{formatCurrency(totalInvestmentValue)}</Text>
+                    <Text style={styles.muted}>Güncel Değer</Text>
+                    <Text bold style={styles.white}>${totalUsdValue.toFixed(2)}</Text>
                   </View>
                   <View style={styles.flex}>
                     <Text style={styles.muted}>Maliyet</Text>
-                    <Text bold style={styles.white}>{formatCurrency(totalInvestmentCost)}</Text>
+                    <Text bold style={styles.white}>${totalUsdCost.toFixed(2)}</Text>
                   </View>
                   <View style={styles.flex}>
                     <Text style={styles.muted}>K/Z</Text>
-                    <Text bold style={{ color: totalPnl >= 0 ? '#2ae600' : '#ef4444' }}>
-                      {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
+                    <Text bold style={{ color: totalUsdPnl >= 0 ? '#2ae600' : '#ef4444' }}>
+                      {totalUsdPnl >= 0 ? '+' : ''}${totalUsdPnl.toFixed(2)}
                     </Text>
-                    <Text style={{ color: totalPnl >= 0 ? '#2ae600' : '#ef4444', fontSize: 12 }}>
-                      {totalPnl >= 0 ? '▲' : '▼'} {Math.abs(totalPnlPct).toFixed(2)}%
+                    <Text style={{ color: totalUsdPnl >= 0 ? '#2ae600' : '#ef4444', fontSize: 12 }}>
+                      {totalUsdPnl >= 0 ? '▲' : '▼'} {Math.abs(totalUsdPnlPct).toFixed(2)}%
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            )}
+
+            {/* Hisse/Fon özet — TRY */}
+            {hasTry && (
+              <Card>
+                <Text style={[styles.muted, { fontSize: 11, marginBottom: 8 }]}>TRY PORTFÖY</Text>
+                <View style={styles.pnlRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.muted}>Güncel Değer</Text>
+                    <Text bold style={styles.white}>{formatCurrency(totalTryValue, 'TRY')}</Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.muted}>Maliyet</Text>
+                    <Text bold style={styles.white}>{formatCurrency(totalTryCost, 'TRY')}</Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.muted}>K/Z</Text>
+                    <Text bold style={{ color: totalTryPnl >= 0 ? '#2ae600' : '#ef4444' }}>
+                      {totalTryPnl >= 0 ? '+' : ''}{formatCurrency(totalTryPnl, 'TRY')}
+                    </Text>
+                    <Text style={{ color: totalTryPnl >= 0 ? '#2ae600' : '#ef4444', fontSize: 12 }}>
+                      {totalTryPnl >= 0 ? '▲' : '▼'} {Math.abs(totalTryPnlPct).toFixed(2)}%
                     </Text>
                   </View>
                 </View>
@@ -351,6 +403,7 @@ export default function Portfolio() {
             ) : (
               investments.map((inv) => {
                 const q = quotes[inv.symbol]
+                const currency = q?.currency ?? inv.currency  // quote'tan gerçek currency al
                 const currentPrice = q?.regularMarketPrice ?? inv.avg_cost
                 const currentValue = inv.quantity * currentPrice
                 const costValue = inv.quantity * inv.avg_cost
@@ -382,14 +435,14 @@ export default function Portfolio() {
                       </View>
                       <View style={styles.invCol}>
                         <Text style={styles.invLabel}>Ort. Maliyet</Text>
-                        <Text bold style={styles.white}>{formatPrice(inv.avg_cost, inv.currency)}</Text>
+                        <Text bold style={styles.white}>{formatPrice(inv.avg_cost, currency)}</Text>
                       </View>
                       <View style={styles.invCol}>
                         <Text style={styles.invLabel}>Güncel Fiyat</Text>
                         {quotesLoading && !q
                           ? <ActivityIndicator color="#3a81f2" size={14} />
                           : <Text bold style={{ color: isUp ? '#2ae600' : '#ef4444' }}>
-                              {q ? formatPrice(q.regularMarketPrice, q.currency) : '—'}
+                              {q ? formatPrice(q.regularMarketPrice, currency) : '—'}
                             </Text>
                         }
                       </View>
@@ -398,11 +451,11 @@ export default function Portfolio() {
                     <View style={styles.invFooter}>
                       <View>
                         <Text style={styles.invLabel}>Toplam Değer</Text>
-                        <Text bold style={styles.white}>{formatPrice(currentValue, inv.currency)}</Text>
+                        <Text bold style={styles.white}>{formatPrice(currentValue, currency)}</Text>
                       </View>
                       <View style={styles.pnlBadge}>
                         <Text style={{ color: isUp ? '#2ae600' : '#ef4444', fontWeight: '700' }}>
-                          {isUp ? '+' : ''}{formatPrice(pnl, inv.currency)}
+                          {isUp ? '+' : ''}{formatPrice(pnl, currency)}
                         </Text>
                         <Text style={{ color: isUp ? '#2ae600' : '#ef4444', fontSize: 12 }}>
                           {isUp ? '▲' : '▼'} {Math.abs(pnlPct).toFixed(2)}%
